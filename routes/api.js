@@ -6,7 +6,7 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
   
     .get(function (req, res){
-      // let project = req.params.project;
+      let project = req.params.project;
       // let issue_title = req.query.issue_title;
       // let issue_text = req.query.issue_text;
       // let created_by = req.query.created_by;
@@ -17,13 +17,15 @@ module.exports = function (app) {
       // let _id = req.query._id;
       // let open = req.query.open;
 
-      // let respond = projects[project];
-      // console.log(req.query);
-      // req.query.forEach(element => {
-      //   respond = respond.filter(entry => entry[element] == res.query[element])
-      // });
+      let respond = projects[project];
+      // console.log('get respond', respond);
+      for (let key in req.query) {
+        if (!respond) break;
+        respond = respond.filter(entry => entry[key] == req.query[key])
+      }
       
-      // return respond;
+      // console.log('get filtered respond', respond);
+      return res.json(respond);
     })
     
     .post(function (req, res){
@@ -43,8 +45,8 @@ module.exports = function (app) {
       else {
 
         respond = {issue_text, issue_title, created_by, assigned_to, status_text, created_on, updated_on, _id, open};
-        if (! projects.hasOwnProperty(project)) projects.project = []
-        projects.project.push(respond);
+        if (! projects.hasOwnProperty(project)) projects[project] = []
+        projects[project].push(respond);
       }
       // console.log(respond);
 
