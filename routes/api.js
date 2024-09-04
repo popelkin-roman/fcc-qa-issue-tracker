@@ -55,8 +55,30 @@ module.exports = function (app) {
     
     .put(function (req, res){
       let project = req.params.project;
+      let _id = req.body._id;
+      let respond;
+      let reqFields = Object.keys(req.body);
+      // console.log('reqFields',reqFields);
 
-      // return res.json({  result: 'successfully updated', '_id': _id })
+      if (! _id) respond = { error: 'missing _id' }
+      else if (reqFields.every(field => field === '_id' || field !== '_id' && !req.body[field])) respond = { error: 'no update field(s) sent', '_id': _id }
+      else {
+        // console.log(projects[project]);
+        // console.log('enryID',projects[project][0]._id);
+        let entryIndex = projects[project].findIndex(entry => entry._id === _id)
+        if (entryIndex < 0) respond = { error: 'could not update', '_id': _id }
+        else {
+          reqFields.forEach(field => {
+            if (req.body[field]) {
+              projects[project][entryIndex][field] = req.body[field];
+            }
+          });
+          projects[project][entryIndex].updated_on = new Date();
+          respond = {  result: 'successfully updated', '_id': _id }
+        }
+      }
+      // console.log('PUT respond', respond);
+      return res.json(respond)
       
     })
     
