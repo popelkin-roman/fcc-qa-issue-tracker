@@ -84,7 +84,19 @@ module.exports = function (app) {
     
     .delete(function (req, res){
       let project = req.params.project;
-      
+      let _id = req.body._id;
+      let respond;
+
+      if (! _id) respond = { error: 'missing _id' }
+      else {
+        let entryIndex = projects[project].findIndex(entry => entry._id === _id)
+        if (entryIndex < 0) respond = { error: 'could not delete', '_id': _id }
+        else {
+          projects[project].splice(entryIndex, 1);
+          respond = { result: 'successfully deleted', '_id': _id }
+        }
+      }
+      return res.json(respond)
     });
 
     function createRandomId(length) {
