@@ -7,24 +7,13 @@ module.exports = function (app) {
   
     .get(function (req, res){
       let project = req.params.project;
-      // let issue_title = req.query.issue_title;
-      // let issue_text = req.query.issue_text;
-      // let created_by = req.query.created_by;
-      // let assigned_to = req.query.assigned_to;
-      // let status_text = req.query.status_text;
-      // let created_on = req.query.created_on;
-      // let updated_on = req.query.updated_on;
-      // let _id = req.query._id;
-      // let open = req.query.open;
 
       let respond = projects[project];
-      // console.log('get respond', respond);
       for (let key in req.query) {
         if (!respond) break;
         respond = respond.filter(entry => entry[key] == req.query[key])
       }
       
-      // console.log('get filtered respond', respond);
       return res.json(respond);
     })
     
@@ -43,12 +32,10 @@ module.exports = function (app) {
       
       if (!(issue_title && issue_text && created_by)) respond = { error: 'required field(s) missing' };
       else {
-
         respond = {issue_text, issue_title, created_by, assigned_to, status_text, created_on, updated_on, _id, open};
         if (! projects.hasOwnProperty(project)) projects[project] = []
         projects[project].push(respond);
       }
-      // console.log(respond);
 
       return res.json(respond)
     })
@@ -58,13 +45,10 @@ module.exports = function (app) {
       let _id = req.body._id;
       let respond;
       let reqFields = Object.keys(req.body);
-      // console.log('reqFields',reqFields);
 
       if (! _id) respond = { error: 'missing _id' }
       else if (reqFields.every(field => field === '_id' || field !== '_id' && !req.body[field])) respond = { error: 'no update field(s) sent', '_id': _id }
       else {
-        // console.log(projects[project]);
-        // console.log('enryID',projects[project][0]._id);
         let entryIndex = projects[project].findIndex(entry => entry._id === _id)
         if (entryIndex < 0) respond = { error: 'could not update', '_id': _id }
         else {
@@ -77,7 +61,6 @@ module.exports = function (app) {
           respond = {  result: 'successfully updated', '_id': _id }
         }
       }
-      // console.log('PUT respond', respond);
       return res.json(respond)
       
     })
